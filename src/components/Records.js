@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import Record from "./Record";
-import { getJSON } from "jquery";
+import RecordForm from "./RecordForm";
+import * as RecordsAPI from "../utils/RecordsAPI";
 
 class Records extends Component {
   constructor() {
@@ -13,7 +14,7 @@ class Records extends Component {
   }
 
   componentDidMount() {
-    getJSON("https://5bbc479929214000136cbfaf.mockapi.io/api/v1/records").then(
+    RecordsAPI.getAll().then(
       response =>
         this.setState({
           records: response,
@@ -29,32 +30,37 @@ class Records extends Component {
 
   render() {
     const { error, isLoad, records } = this.state;
+    let recordsCompontent;
 
     if (error) {
-      return <div>Error: {error.responseText}</div>;
+      recordsCompontent = <div>Error: {error.responseText}</div>;
     } else if (!isLoad) {
-      return <div>Loading...</div>;
+      recordsCompontent = <div>Loading...</div>;
     } else {
-      return (
-        <div>
-          <h2>Records</h2>
-          <table className="table table-bordered">
-            <thead>
-              <tr>
-                <th>Date</th>
-                <th>Title</th>
-                <th>Amount</th>
-              </tr>
-            </thead>
-            <tbody>
-              {records.map(record => (
-                <Record key={record.id} {...record} />
-              ))}
-            </tbody>
-          </table>
-        </div>
+      recordsCompontent = (
+        <table className="table table-bordered">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Title</th>
+              <th>Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            {records.map(record => (
+              <Record key={record.id} {...record} />
+            ))}
+          </tbody>
+        </table>
       );
     }
+    return (
+      <div>
+        <h2>Records</h2>
+        <RecordForm />
+        {recordsCompontent}
+      </div>
+    );
   }
 }
 
