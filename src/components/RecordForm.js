@@ -24,7 +24,14 @@ class RecordForm extends Component {
   handleSubmit(event) {
     event.preventDefault();
     RecordsAPI.create(this.state)
-      .then(response => console.log(response))
+      .then(response => {
+        this.props.handleNewRecord(response);
+        this.setState({
+          date: "",
+          title: "",
+          amount: ""
+        });
+      })
       .fail(error => console.log("error", error));
   }
 
