@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import Record from "./Record";
 import RecordForm from "./RecordForm";
 import * as RecordsAPI from "../utils/RecordsAPI";
+import AmountBox from "./AmountBox";
 
 class Records extends Component {
   constructor() {
@@ -62,6 +63,30 @@ class Records extends Component {
     });
   }
 
+  credits() {
+    let credits = this.state.records.filter(record => {
+      return record.amount >= 0;
+    });
+
+    return credits.reduce((prev, curr) => {
+      return prev + Number.parseInt(curr.amount, 0);
+    }, 0);
+  }
+
+  debits() {
+    let credits = this.state.records.filter(record => {
+      return record.amount < 0;
+    });
+
+    return credits.reduce((prev, curr) => {
+      return prev + Number.parseInt(curr.amount, 0);
+    }, 0);
+  }
+
+  balance() {
+    return this.credits() + this.debits();
+  }
+
   render() {
     const { error, isLoad, records } = this.state;
     let recordsCompontent;
@@ -97,6 +122,11 @@ class Records extends Component {
     return (
       <div>
         <h2>Records</h2>
+        <div className="row md-3">
+          <AmountBox text="Credits" type="success" amount={this.credits()} />
+          <AmountBox text="Debits" type="danger" amount={this.debits()} />
+          <AmountBox text="Balance" type="info" amount={this.balance()} />
+        </div>
         <RecordForm handleNewRecord={this.addRecord.bind(this)} />
         {recordsCompontent}
       </div>
